@@ -310,12 +310,17 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Prisha Hadvani** - Frontend Development & UI/UX Design
 - **Palak Dave** - Frontend Development & Testing
 
-### Technology Acknowledgments
-- React team for the amazing framework
-- Tailwind CSS for the utility-first approach
-- Prisma team for the excellent ORM
-- Express.js team for the robust backend framework
-- All contributors and testers
+Technology Acknowledgments
+
+React Team – For building and maintaining such a powerful and flexible front-end framework that makes creating dynamic, component-driven user interfaces efficient and enjoyable.
+
+Tailwind CSS Team – For introducing a utility-first CSS framework that simplifies styling and enables developers to design responsive, modern UIs with speed and consistency.
+
+Prisma Team – For providing an intuitive and type-safe ORM that bridges databases with applications seamlessly, improving developer productivity and reducing errors.
+
+Express.js Team – For creating a minimal yet robust backend framework that powers scalable server-side applications and simplifies API development.
+
+All Contributors and Testers – To the open-source community, maintainers, and everyone who tests and contributes to these technologies, ensuring they remain stable, evolving, and accessible for developers worldwide.
 
 ## 📞 Support
 
