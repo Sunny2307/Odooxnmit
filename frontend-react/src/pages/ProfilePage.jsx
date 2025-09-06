@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useApp } from '../App';
 import Navbar from '../components/Common/Navbar';
+import Sidebar from '../components/Common/Sidebar';
+import { generateDataExportPDF, generateReportPDF, generateActivityLogPDF, downloadPDF } from '../utils/pdfGenerator';
 
 const ProfilePage = () => {
-  const { user, logout } = useApp();
+  const { user, logout, api } = useApp();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [showActivityLog, setShowActivityLog] = useState(false);
+  const [activityLog, setActivityLog] = useState([]);
+  const [activityLoading, setActivityLoading] = useState(false);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -20,11 +25,121 @@ const ProfilePage = () => {
     logout();
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
+  // Export data functionality
+  const handleExportData = async () => {
+    try {
+      setLoading(true);
+      setError('');
       
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      const response = await api.profile.exportData();
+      
+      if (response.success) {
+        // Generate PDF with charts
+        const pdf = await generateDataExportPDF(response.data, user);
+        const filename = `teamnest-data-export-${new Date().toISOString().split('T')[0]}.pdf`;
+        downloadPDF(pdf, filename);
+        
+        setSuccess('Data exported as PDF successfully!');
+      } else {
+        setError(response.message || 'Failed to export data');
+      }
+    } catch (err) {
+      setError(err.message || 'Failed to export data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Download reports functionality
+  const handleDownloadReport = async (reportType = 'monthly') => {
+    try {
+      setLoading(true);
+      setError('');
+      
+      const response = await api.profile.generateReport({ reportType });
+      
+      if (response.success) {
+        // Generate PDF report with charts
+        const pdf = await generateReportPDF(response.data, reportType);
+        const filename = `teamnest-report-${reportType}-${new Date().toISOString().split('T')[0]}.pdf`;
+        downloadPDF(pdf, filename);
+        
+        setSuccess(`${reportType.charAt(0).toUpperCase() + reportType.slice(1)} report downloaded as PDF successfully!`);
+      } else {
+        setError(response.message || 'Failed to generate report');
+      }
+    } catch (err) {
+      setError(err.message || 'Failed to generate report');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // View activity log functionality
+  const handleViewActivityLog = async () => {
+    try {
+      setActivityLoading(true);
+      setError('');
+      
+      const response = await api.profile.getActivityLog({ limit: 50 });
+      
+      if (response.success) {
+        setActivityLog(response.data.activities);
+        setShowActivityLog(true);
+      } else {
+        setError(response.message || 'Failed to load activity log');
+      }
+    } catch (err) {
+      setError(err.message || 'Failed to load activity log');
+    } finally {
+      setActivityLoading(false);
+    }
+  };
+
+  const formatActivityDate = (dateString) => {
+    return new Date(dateString).toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  // Download activity log as PDF
+  const handleDownloadActivityLogPDF = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      
+      const response = await api.profile.getActivityLog({ limit: 100 });
+      
+      if (response.success) {
+        // Generate PDF activity log
+        const pdf = await generateActivityLogPDF(response.data.activities, user);
+        const filename = `teamnest-activity-log-${new Date().toISOString().split('T')[0]}.pdf`;
+        downloadPDF(pdf, filename);
+        
+        setSuccess('Activity log downloaded as PDF successfully!');
+      } else {
+        setError(response.message || 'Failed to generate activity log PDF');
+      }
+    } catch (err) {
+      setError(err.message || 'Failed to generate activity log PDF');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex">
+      <Sidebar />
+      
+      <div className="flex-1 flex flex-col">
+        <Navbar />
+        
+        <div className="flex-1 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-8">
+          <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Profile Settings</h1>
@@ -163,14 +278,61 @@ const ProfilePage = () => {
               <h2 className="text-lg font-medium text-gray-900 mb-4">Quick Actions</h2>
               
               <div className="space-y-3">
-                <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md">
-                  Export Data
+                <button 
+                  onClick={handleExportData}
+                  disabled={loading}
+                  className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors duration-200 disabled:opacity-50"
+                >
+                  <span>Export Data</span>
+                  {loading && (
+                    <div className="loading-spinner w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full"></div>
+                  )}
                 </button>
-                <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md">
-                  Download Reports
+                
+                <div className="space-y-2">
+                  <button 
+                    onClick={() => handleDownloadReport('weekly')}
+                    disabled={loading}
+                    className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors duration-200 disabled:opacity-50"
+                  >
+                    <span>Weekly Report</span>
+                    {loading && (
+                      <div className="loading-spinner w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full"></div>
+                    )}
+                  </button>
+                  
+                  <button 
+                    onClick={() => handleDownloadReport('monthly')}
+                    disabled={loading}
+                    className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors duration-200 disabled:opacity-50"
+                  >
+                    <span>Monthly Report</span>
+                    {loading && (
+                      <div className="loading-spinner w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full"></div>
+                    )}
+                  </button>
+                </div>
+                
+                <button 
+                  onClick={handleViewActivityLog}
+                  disabled={activityLoading}
+                  className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors duration-200 disabled:opacity-50"
+                >
+                  <span>View Activity Log</span>
+                  {activityLoading && (
+                    <div className="loading-spinner w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full"></div>
+                  )}
                 </button>
-                <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md">
-                  View Activity Log
+                
+                <button 
+                  onClick={handleDownloadActivityLogPDF}
+                  disabled={loading}
+                  className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors duration-200 disabled:opacity-50"
+                >
+                  <span>Download Activity Log PDF</span>
+                  {loading && (
+                    <div className="loading-spinner w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full"></div>
+                  )}
                 </button>
               </div>
             </div>
@@ -204,7 +366,86 @@ const ProfilePage = () => {
             </div>
           </div>
         </div>
+          </div>
+        </div>
       </div>
+      
+      {/* Activity Log Modal */}
+      {showActivityLog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[80vh] overflow-hidden">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">Activity Log</h3>
+              <button
+                onClick={() => setShowActivityLog(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+              >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto max-h-[60vh]">
+              {activityLog.length === 0 ? (
+                <div className="text-center py-8">
+                  <div className="text-gray-400 mb-2">
+                    <svg className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                  </div>
+                  <p className="text-gray-500">No activity found</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {activityLog.map((activity) => (
+                    <div key={activity.id} className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
+                      <div className="flex-shrink-0 text-lg">{activity.icon}</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm font-medium text-gray-900">
+                            {activity.action === 'completed' ? 'Completed' :
+                             activity.action === 'started' ? 'Started' :
+                             activity.action === 'created' ? 'Created' :
+                             activity.action === 'received' ? 'Received' : activity.action} {activity.title}
+                          </p>
+                          <span className="text-xs text-gray-500">
+                            {formatActivityDate(activity.timestamp)}
+                          </span>
+                        </div>
+                        <div className="mt-1 flex items-center space-x-2">
+                          {activity.project && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                              {activity.project}
+                            </span>
+                          )}
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                            activity.status === 'completed' ? 'bg-green-100 text-green-800' :
+                            activity.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                            activity.status === 'unread' ? 'bg-red-100 text-red-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {activity.status}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            
+            <div className="flex items-center justify-end p-6 border-t border-gray-200">
+              <button
+                onClick={() => setShowActivityLog(false)}
+                className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors duration-200"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

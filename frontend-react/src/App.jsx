@@ -11,6 +11,9 @@ import ProjectsPage from './components/Project/ProjectList';
 import ProjectDetailPage from './pages/ProjectDetailPage';
 import ProfilePage from './pages/ProfilePage';
 import MyTasksPage from './pages/MyTasksPage';
+import PersonalTodosPage from './pages/PersonalTodosPage';
+import NotificationsPage from './pages/NotificationsPage';
+import DashboardPage from './pages/DashboardPage';
 
 // API Configuration
 const API_BASE_URL = 'http://localhost:3001/api';
@@ -148,6 +151,26 @@ const api = {
     }),
   },
 
+  // Personal Todo endpoints
+  personalTodos: {
+    getAll: () => api.request('/personal-todos'),
+    create: (data) => api.request('/personal-todos', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+    getById: (id) => api.request(`/personal-todos/${id}`),
+    update: (id, data) => api.request(`/personal-todos/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+    delete: (id) => api.request(`/personal-todos/${id}`, {
+      method: 'DELETE',
+    }),
+    toggle: (id) => api.request(`/personal-todos/${id}/toggle`, {
+      method: 'PATCH',
+    }),
+  },
+
   // Notification endpoints
   notifications: {
     getAll: (params = {}) => {
@@ -166,6 +189,25 @@ const api = {
     clearAll: () => api.request('/notifications/clear-all', {
       method: 'DELETE',
     }),
+  },
+
+  // Dashboard endpoints
+  dashboard: {
+    getStats: () => api.request('/dashboard/stats'),
+    getInsights: () => api.request('/dashboard/insights'),
+  },
+
+  // Profile endpoints
+  profile: {
+    exportData: () => api.request('/profile/export'),
+    generateReport: (params = {}) => {
+      const queryString = new URLSearchParams(params).toString();
+      return api.request(`/profile/report${queryString ? `?${queryString}` : ''}`);
+    },
+    getActivityLog: (params = {}) => {
+      const queryString = new URLSearchParams(params).toString();
+      return api.request(`/profile/activity${queryString ? `?${queryString}` : ''}`);
+    },
   },
 };
 
@@ -366,6 +408,11 @@ function App() {
             } />
 
             {/* Protected Routes */}
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            } />
             <Route path="/projects" element={
               <ProtectedRoute>
                 <ProjectsPage />
@@ -379,6 +426,16 @@ function App() {
             <Route path="/profile" element={
               <ProtectedRoute>
                 <ProfilePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/notifications" element={
+              <ProtectedRoute>
+                <NotificationsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/personal-todos" element={
+              <ProtectedRoute>
+                <PersonalTodosPage />
               </ProtectedRoute>
             } />
             <Route path="/my-tasks" element={
@@ -408,7 +465,7 @@ function App() {
             } />
 
             {/* Default redirect */}
-            <Route path="/" element={<Navigate to="/projects" replace />} />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
             
             {/* 404 */}
             <Route path="*" element={
@@ -416,8 +473,8 @@ function App() {
                 <div className="text-center">
                   <h1 className="text-4xl font-bold text-gray-900 mb-4">404</h1>
                   <p className="text-gray-600 mb-8">Page not found</p>
-                  <a href="/projects" className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors">
-                    Go to Projects
+                  <a href="/dashboard" className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors">
+                    Go to Dashboard
                   </a>
                 </div>
               </div>

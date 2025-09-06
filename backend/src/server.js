@@ -11,6 +11,9 @@ const projectRoutes = require('./routes/projects');
 const taskRoutes = require('./routes/tasks');
 const discussionRoutes = require('./routes/discussions');
 const notificationRoutes = require('./routes/notifications');
+const personalTodoRoutes = require('./routes/personalTodos');
+const dashboardRoutes = require('./routes/dashboard');
+const profileRoutes = require('./routes/profile');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -57,6 +60,9 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/discussions', discussionRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/personal-todos', personalTodoRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/profile', profileRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
