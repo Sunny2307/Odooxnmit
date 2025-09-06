@@ -4,7 +4,44 @@ A modern, responsive team collaboration platform built with React and Node.js, f
 
 ## 🎯 Project Overview
 
+**SynergySphere – Advanced Team Collaboration Platform**
+
 TeamNest is a comprehensive team collaboration platform designed to help teams manage projects, track tasks, and communicate effectively. Built with modern web technologies, it provides an intuitive interface for project management and team coordination.
+
+## 👥 Team Information
+
+### Team Name: Cortex
+
+### Problem Statement
+**SynergySphere – Advanced Team Collaboration Platform**
+
+### Team Leader
+- **Name:** Sunny Radadiya
+- **Email:** 23ce122@charusat.edu.in
+- **Mobile:** 9586591497
+
+### Team Members
+- **Aayush Tilva**
+  - Email: 23ce137@charusat.edu.in
+  
+- **Prisha Hadvani**
+  - Email: 23ce038@charusat.edu.in
+  
+- **Palak Dave**
+  - Email: 23ce018@charusat.edu.in
+
+### Institution
+**Charotar University of Science and Technology (CHARUSAT)**
+
+## 📚 Academic Context
+
+This project was developed as part of academic coursework at CHARUSAT, demonstrating practical application of modern web development technologies in creating real-world solutions for team collaboration and project management.
+
+### Project Goals
+- Implement a full-stack web application using React and Node.js
+- Demonstrate understanding of modern development practices
+- Create a practical solution for team collaboration challenges
+- Showcase skills in database design, API development, and user interface design
 
 ## 🚀 Key Features
 
@@ -267,9 +304,17 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
+### Team Cortex
+- **Sunny Radadiya** - Team Leader & Full-stack Development
+- **Aayush Tilva** - Backend Development & Database Design
+- **Prisha Hadvani** - Frontend Development & UI/UX Design
+- **Palak Dave** - Frontend Development & Testing
+
+### Technology Acknowledgments
 - React team for the amazing framework
 - Tailwind CSS for the utility-first approach
 - Prisma team for the excellent ORM
+- Express.js team for the robust backend framework
 - All contributors and testers
 
 ## 📞 Support
