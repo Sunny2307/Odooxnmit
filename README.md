@@ -1,12 +1,12 @@
 # TeamNest - Team Collaboration Platform
 
-A modern, responsive team collaboration platform built with React and Node.js, featuring project management, task tracking, drag-and-drop functionality, and team communication.
+A modern, responsive team collaboration platform built with React and Node.js, featuring project management, task tracking, drag-and-drop functionality and team communication.
 
 ## 🎯 Project Overview
 
 **SynergySphere – Advanced Team Collaboration Platform**
 
-TeamNest is a comprehensive team collaboration platform designed to help teams manage projects, track tasks, and communicate effectively. Built with modern web technologies, it provides an intuitive interface for project management and team coordination.
+TeamNest is a comprehensive team collaboration platform designed to help teams manage projects, track tasks and communicate effectively. It is built with modern web technologies, it provides an intuitive interface for project management and team coordination.
 
 ## 👥 Team Information
 
