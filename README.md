@@ -33,6 +33,8 @@
 
 ## 👥 Team Information
 
+video link :- https://drive.google.com/file/d/1Z5dcbvg3l7Ny8c35oSIscPONhJ0B-F6G/view?usp=drivesdk
+
 ### 🏆 **Team Name: Cortex**
 
 | Role | Name | Email | Contribution |
